@@ -1,3 +1,3 @@
 # tickwork.dev
 
-Site tickwork.dev — servi via GitHub Pages.
+tickwork.dev website — served via GitHub Pages.
