@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tickwork — Incremental game engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:  #E8520A;
+      --pale:    #f0b89a;
+      --light:   #f2f1ec;
+      --dark:    #1a1a1a;
+      --mid:     #4a4642;
+      --rule:    #dbd9d2;
+      --font:    'Atkinson Hyperlegible', sans-serif;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: var(--font);
+      background: var(--light);
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 48px 64px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    #logo-canvas { display: block; }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding-top: 20px;
+    }
+
+    nav a {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--mid);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: color 0.15s;
+    }
+
+    nav a:hover { color: var(--orange); }
+
+    nav a.cta {
+      color: var(--orange);
+      border-bottom: 1px solid var(--orange);
+      padding-bottom: 1px;
+    }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      padding: 80px 64px 0;
+      max-width: 900px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      margin-bottom: 72px;
+    }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--dark);
+      margin-bottom: 28px;
+      max-width: 680px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--orange);
+    }
+
+    .hero-desc {
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--mid);
+      max-width: 560px;
+    }
+
+    /* ── What it is ── */
+    .what {
+      margin-bottom: 72px;
+    }
+
+    .section-rule {
+      width: 32px;
+      height: 2px;
+      background: var(--orange);
+      margin-bottom: 32px;
+    }
+
+    .what-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--rule);
+    }
+
+    .what-cell {
+      padding: 32px 36px;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .what-cell:nth-child(2n) { border-right: none; }
+    .what-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+    .what-cell-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--pale);
+      margin-bottom: 10px;
+    }
+
+    .what-cell h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .what-cell p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--mid);
+    }
+
+    /* ── Stack ── */
+    .stack {
+      margin-bottom: 72px;
+    }
+
+    .stack-intro {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--mid);
+      margin-bottom: 28px;
+      max-width: 520px;
+    }
+
+    .stack-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 13px;
+      font-family: 'SF Mono', 'Fira Mono', 'Cascadia Code', monospace;
+      color: var(--dark);
+      background: white;
+      border: 1px solid var(--rule);
+      padding: 5px 12px;
+      border-radius: 2px;
+      letter-spacing: -0.01em;
+    }
+
+    .tag.primary {
+      background: var(--dark);
+      color: var(--pale);
+      border-color: var(--dark);
+    }
+
+    /* ── Example game ── */
+    .example {
+      margin-bottom: 72px;
+      display: flex;
+      align-items: flex-start;
+      gap: 48px;
+    }
+
+    .example-text { flex: 1; }
+
+    .example-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 14px;
+    }
+
+    .example h2 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--dark);
+      margin-bottom: 14px;
+    }
+
+    .example p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--mid);
+      margin-bottom: 20px;
+    }
+
+    .example a.link-arrow {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--orange);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .example a.link-arrow::after {
+      content: '→';
+      transition: transform 0.15s;
+    }
+
+    .example a.link-arrow:hover::after { transform: translateX(3px); }
+
+    .example-badge {
+      flex-shrink: 0;
+      width: 120px;
+      height: 120px;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--pale);
+      position: relative;
+    }
+
+    .example-badge::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 1px solid rgba(240,184,154,0.25);
+    }
+
+    /* ── Open source intent ── */
+    .oss {
+      margin-bottom: 72px;
+      padding: 36px 40px;
+      background: white;
+      border-left: 3px solid var(--orange);
+    }
+
+    .oss h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+
+    .oss p {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--mid);
+    }
+
+    /* ── Contact ── */
+    .contact {
+      margin-bottom: 96px;
+    }
+
+    .contact h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--dark);
+      margin-bottom: 12px;
+    }
+
+    .contact p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--mid);
+      margin-bottom: 22px;
+      max-width: 460px;
+    }
+
+    .contact-email {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark);
+      text-decoration: none;
+      border-bottom: 2px solid var(--orange);
+      padding-bottom: 2px;
+      transition: color 0.15s;
+    }
+
+    .contact-email:hover { color: var(--orange); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 24px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: var(--pale);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      header { padding: 32px 24px 0; flex-direction: column; gap: 24px; }
+      nav { padding-top: 0; }
+      main { padding: 56px 24px 0; }
+      .what-grid { grid-template-columns: 1fr; }
+      .what-cell:nth-child(2n) { border-right: none; }
+      .what-cell { border-right: none; }
+      .what-cell:last-child { border-bottom: none; }
+      .example { flex-direction: column; gap: 28px; }
+      footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <canvas id="logo-canvas" aria-label="Tickwork"></canvas>
+    <nav>
+      <a href="https://crates.io/crates/tickwork-engine" target="_blank" rel="noopener">crates.io</a>
+      <a href="mailto:contact@tickwork.dev" class="cta">contact@tickwork.dev</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <p class="hero-eyebrow">Rust · WebAssembly · Open source</p>
+      <h1>A reusable engine for <em>incremental games</em></h1>
+      <p class="hero-desc">
+        Tickwork is a headless simulation engine written in Rust, designed to run the same codebase natively and in the browser via WebAssembly. Build the mechanics once; ship everywhere.
+      </p>
+    </section>
+
+    <section class="what">
+      <div class="section-rule"></div>
+      <div class="what-grid">
+        <div class="what-cell">
+          <p class="what-cell-label">Engine</p>
+          <h3>tickwork-engine</h3>
+          <p>A library crate with no game content. Declare resources, transitions, and plugins; the engine handles the tick loop, save state, and plugin lifecycle.</p>
+        </div>
+        <div class="what-cell">
+          <p class="what-cell-label">Shell</p>
+          <h3>tickwork-shell</h3>
+          <p>A shared UI shell built on egui. Consumes the engine's state and renders tabs, sections, and components — consistent across every game that uses it.</p>
+        </div>
+        <div class="what-cell">
+          <p class="what-cell-label">Architecture</p>
+          <h3>Declarative content</h3>
+          <p>Games are data. Resources, transitions, narrative arcs, and UI definitions are declared; the engine interprets them. No forking required to make a new game.</p>
+        </div>
+        <div class="what-cell">
+          <p class="what-cell-label">Target</p>
+          <h3>Native + browser</h3>
+          <p>Full parity between desktop (Windows, Linux, macOS) and WebAssembly. One codebase, two build targets, no compromises on simulation logic.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="stack">
+      <div class="section-rule"></div>
+      <p class="stack-intro">
+        Built on a deliberate stack. Nothing experimental for the sake of it — every dependency earns its place.
+      </p>
+      <div class="stack-tags">
+        <span class="tag primary">Rust</span>
+        <span class="tag primary">WebAssembly</span>
+        <span class="tag">egui + eframe</span>
+        <span class="tag">trunk</span>
+        <span class="tag">serde / RON</span>
+        <span class="tag">kira</span>
+        <span class="tag">fluent-rs</span>
+        <span class="tag">Supabase</span>
+      </div>
+    </section>
+
+    <section class="example">
+      <div class="example-text">
+        <p class="example-eyebrow">Built with Tickwork</p>
+        <h2>Holum</h2>
+        <p>
+          The first game built on this engine. Holum is an incremental game that explores resource loops, phase transitions, and long-arc narrative — developed in parallel with the engine itself.
+        </p>
+        <a href="https://holum.io" target="_blank" rel="noopener" class="link-arrow">Visit holum.io</a>
+      </div>
+      <div class="example-badge" aria-hidden="true">HOLUM</div>
+    </section>
+
+    <section class="oss">
+      <h3>Open source intent</h3>
+      <p>
+        Both <code>tickwork-engine</code> and <code>tickwork-shell</code> are planned for release as open source software. The goal is a stable, reusable foundation that other developers can build on. Timing and licence to be confirmed once the architecture matures with Holum.
+      </p>
+    </section>
+
+    <section class="contact">
+      <div class="section-rule"></div>
+      <h2>Interested?</h2>
+      <p>
+        If you're thinking about building an incremental game and want to follow the project, contribute, or just talk architecture — get in touch.
+      </p>
+      <a href="mailto:contact@tickwork.dev" class="contact-email">contact@tickwork.dev</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <span class="footer-note">tickwork.dev</span>
+    <span class="footer-note">Engine for incremental games</span>
+  </footer>
+
+  <script>
+    // ── Logo code (inline) ──────────────────────────────────────────────────
+
+    const TICKWORK_COLORS = {
+      orange: '#E8520A',
+      pale:   '#f0b89a',
+      light:  '#f2f1ec',
+      dark:   '#1a1a1a',
+    };
+
+    function drawArcSegments(ctx, pivX, pivY, rl, a0, a1, steps) {
+      let end = a1;
+      while (end < a0) end += Math.PI * 2;
+      ctx.beginPath();
+      for (let i = 0; i <= steps; i++) {
+        const a = a0 + (end - a0) * i / steps;
+        const x = pivX + Math.cos(a) * rl;
+        const y = pivY + Math.sin(a) * rl;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    async function renderTickworkLogo(canvas, variant = 'light') {
+      const ORANGE = TICKWORK_COLORS.orange;
+      const PALE   = TICKWORK_COLORS.pale;
+      const bg     = variant === 'dark' ? TICKWORK_COLORS.dark : TICKWORK_COLORS.light;
+
+      const fs = 48, line2Y = 76, triH = 8.25;
+
+      await document.fonts.load(`700 ${fs}px 'Atkinson Hyperlegible'`);
+      await document.fonts.load(`400 ${fs}px 'Atkinson Hyperlegible'`);
+
+      const mc = document.createElement('canvas');
+      const mctx = mc.getContext('2d');
+      mctx.font = `700 ${fs}px 'Atkinson Hyperlegible', sans-serif`;
+      const wT  = mctx.measureText('T').width;
+      const wI  = mctx.measureText('I').width;
+      mctx.font = `400 ${fs}px 'Atkinson Hyperlegible', sans-serif`;
+      const ww  = mctx.measureText('w').width;
+      const wi  = mctx.measureText('ı').width;
+      const wc  = mctx.measureText('c').width;
+      const wk  = mctx.measureText('k').width;
+      const wo  = mctx.measureText('o').width;
+      const wr  = mctx.measureText('r').width;
+      const gapWO = mctx.measureText('wo').width - ww - wo;
+      const iAsc  = mctx.measureText('ı').actualBoundingBoxAscent;
+      const wDes  = mctx.measureText('w').actualBoundingBoxDescent;
+      const wAsc  = mctx.measureText('w').actualBoundingBoxAscent;
+
+      const iTop = 46 - iAsc;
+      const wBot = line2Y + wDes;
+      const wTop = line2Y - wAsc;
+      const kInIck = wT + wi + wc, kInOrk = ww + gapWO + wo + wr;
+      const kAlign = Math.max(kInIck, kInOrk);
+      const shiftT = kAlign - kInIck, shiftW = kAlign - kInOrk;
+      const ix = shiftT + wT + wi * 0.5;
+      const hw = triH * 0.65;
+      const totalW = Math.ceil(kAlign + wk + 4);
+      const topPad = 16, leftPad = 38;
+      const cW = totalW + leftPad + 4;
+      const cH = Math.ceil(wBot + 12) + topPad;
+
+      const pI = { x: ix - hw,              y: iTop - triH };
+      const pT = { x: shiftT + wT/2 + wI/6, y: 46 };
+      const pW = { x: shiftW + ww/6,        y: wTop };
+
+      const A1 = 2*(pT.x-pI.x), B1 = 2*(pT.y-pI.y), C1 = pT.x**2-pI.x**2+pT.y**2-pI.y**2;
+      const A2 = 2*(pW.x-pT.x), B2 = 2*(pW.y-pT.y), C2 = pW.x**2-pT.x**2+pW.y**2-pT.y**2;
+      const det = A1*B2 - A2*B1;
+      const pivX = (C1*B2 - C2*B1) / det;
+      const pivY = (A1*C2 - A2*C1) / det;
+      const rl = Math.sqrt((pivX-pI.x)**2 + (pivY-pI.y)**2);
+
+      const aI = Math.atan2(pI.y-pivY, pI.x-pivX);
+      const aT = Math.atan2(pT.y-pivY, pT.x-pivX);
+      const aPleinEnd = aT + 120 * Math.PI / 180;
+
+      canvas.width  = cW * 2;
+      canvas.height = cH * 2;
+      canvas.style.width  = cW + 'px';
+      canvas.style.height = cH + 'px';
+
+      const ctx = canvas.getContext('2d');
+      ctx.scale(2, 2);
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, cW, cH);
+      ctx.save();
+      ctx.translate(leftPad, topPad);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.font = `700 ${fs}px 'Atkinson Hyperlegible', sans-serif`;
+      ctx.fillStyle = PALE; ctx.fillText('T', shiftT, 46);
+      ctx.font = `400 ${fs}px 'Atkinson Hyperlegible', sans-serif`;
+      ctx.fillStyle = PALE;
+      ctx.fillText('ı', shiftT+wT, 46);
+      ctx.fillText('c', shiftT+wT+wi, 46);
+      ctx.fillText('k', kAlign, 46);
+      ctx.fillText('o', shiftW+ww+gapWO, 76);
+      ctx.fillText('r', shiftW+ww+gapWO+wo, 76);
+      ctx.fillText('k', kAlign, 76);
+
+      const triTip = iTop, triTopY = iTop - triH;
+      ctx.fillStyle = ORANGE;
+      ctx.beginPath();
+      ctx.moveTo(ix, triTip);
+      ctx.lineTo(ix+hw, triTopY);
+      ctx.lineTo(ix-hw, triTopY);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = ORANGE; ctx.lineWidth = 1.4;
+      ctx.setLineDash([3, 3]); ctx.globalAlpha = 0.4;
+      drawArcSegments(ctx, pivX, pivY, rl, aI, aT, 40);
+
+      ctx.setLineDash([]); ctx.globalAlpha = 0.85; ctx.lineWidth = 1.8;
+      drawArcSegments(ctx, pivX, pivY, rl, aT, aPleinEnd, 40);
+
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = ORANGE; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(pivX, pivY); ctx.lineTo(pT.x, pT.y); ctx.stroke();
+
+      ctx.fillStyle = ORANGE;
+      ctx.beginPath(); ctx.arc(pT.x, pT.y, 4.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(pivX, pivY, 2, 0, Math.PI*2); ctx.fill();
+
+      ctx.font = `400 ${fs}px 'Atkinson Hyperlegible', sans-serif`;
+      ctx.fillStyle = PALE;
+      ctx.fillText('w', shiftW, 76);
+
+      ctx.restore();
+    }
+
+    // ── Init ────────────────────────────────────────────────────────────────
+    renderTickworkLogo(document.getElementById('logo-canvas'), 'light');
+  </script>
+
+</body>
+</html>
