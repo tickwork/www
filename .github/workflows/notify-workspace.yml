@@ -2,14 +2,22 @@ name: Notify workspace of submodule update
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
 
 jobs:
-  update-workspace:
+  update-main:
     uses: tickwork/workspace/.github/workflows/update-submodule-ref.yml@main
     with:
       submodule: ${{ github.event.repository.name }}
-      branch: ${{ github.ref_name }}
+      branch: main
+      sha: ${{ github.sha }}
+    secrets:
+      TW_WORKSPACE_CI_TOKEN: ${{ secrets.TW_WORKSPACE_CI_TOKEN }}
+  update-dev:
+    uses: tickwork/workspace/.github/workflows/update-submodule-ref.yml@main
+    with:
+      submodule: ${{ github.event.repository.name }}
+      branch: dev
       sha: ${{ github.sha }}
     secrets:
       TW_WORKSPACE_CI_TOKEN: ${{ secrets.TW_WORKSPACE_CI_TOKEN }}
