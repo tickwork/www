@@ -11,4 +11,4 @@ jobs:
       submodule: ${{ github.event.repository.name }}
       branch: ${{ github.ref_name }}
     secrets:
-      WORKSPACE_PUSH_TOKEN: ${{ secrets.WORKSPACE_DISPATCH_TOKEN }}
+      TW_WORKSPACE_CI_TOKEN: ${{ secrets.TW_WORKSPACE_CI_TOKEN }}
