@@ -10,5 +10,6 @@ jobs:
     with:
       submodule: ${{ github.event.repository.name }}
       branch: ${{ github.ref_name }}
+      sha: ${{ github.sha }}
     secrets:
       TW_WORKSPACE_CI_TOKEN: ${{ secrets.TW_WORKSPACE_CI_TOKEN }}
